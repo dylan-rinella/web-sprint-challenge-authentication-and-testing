@@ -3,18 +3,15 @@ const db = require("../../data/dbConfig");
 const secure = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
-//add new user:
 const dbAdd = async (user) => {
   const [id] = await db("users").insert(user);
   return dbFindById(id);
 };
 
-//find user from id:
 const dbFindById = (id) => {
   return db("users").select("id", "username", "password").where({ id }).first();
 };
 
-//find user with filter:
 const dbFindByFilter = (filter) => {
   return db("users").select("id", "username", "password").where(filter).first();
 };
