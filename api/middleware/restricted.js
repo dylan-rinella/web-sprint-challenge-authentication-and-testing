@@ -1,14 +1,26 @@
-module.exports = (req, res, next) => {
-  next();
-  /*
-    IMPLEMENT
+const jwt = require("jsonwebtoken");
 
-    1- On valid token in the Authorization header, call next.
+function restrict() {
+  return async (req, res, next) => {
+    const authDenied = {
+      message: "invalid credentials",
+    }
+    try {
+      const token = req.header.authorization;
+      if (!token) {
+        return res.status(401).json(authDenied);
+      }
+      jwt.verify(token, process.env.JWT_VERIFY, (err, decode) => {
+        if (err) {
+          return res.status(401).json(authDenied);
+        }
+        req.token = decode;
+        next();
+      })
+    } catch (err) {
+      next(err);
+    }
+  };
+}
 
-    2- On missing token in the Authorization header,
-      the response body should include a string exactly as follows: "token required".
-
-    3- On invalid or expired token in the Authorization header,
-      the response body should include a string exactly as follows: "token invalid".
-  */
-};
+module.exports = { restrict };
